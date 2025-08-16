@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{username}} - Profile</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <script>
+            function addHeader(text, type="neutral") {
+                document.querySelector('header').style.display = 'flex';
+                document.querySelector('header').innerText = String(text);
+                document.querySelector('header').classList.add(type);
+            }
+        </script>
+        <header>
+            <p>This user is a workspace admin. Beware!</p>
+        </header>
+        <div class="profile-container" style="background: url({{pfp}}) no-repeat center center; background-size: cover;">
+            <img id="pfp" src="{{pfp}}" width="112" height="112">
+            <div class="plain-profile-container">
+                <div class="name-profile-container">
+                    <p class="smallText">{{memberId}}</p>
+                    <h1>{{username}}</h1>
+                </div>
+                <p id="statusText">{{statusEmoji}} {{statusText}}</p>
+            </div>
+        </div>
+    </body>
+</html>

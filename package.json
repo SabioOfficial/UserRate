@@ -1,0 +1,22 @@
+{
+  "name": "userrate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Sabio",
+  "license": "GPL-3.0-only",
+  "type": "commonjs",
+  "dependencies": {
+    "@slack/web-api": "^7.9.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.1",
+    "emoji-dictionary": "^1.0.12",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "description": ""
+}

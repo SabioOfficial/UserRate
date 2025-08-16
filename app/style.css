@@ -1,0 +1,86 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Archivo', sans-serif;
+}
+
+h1 {
+    font-size: 2.75rem;
+}
+
+header {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    text-align: center;
+}
+
+header.neutral {
+    background-color: #696969; /* freaky */
+    color: white;
+}
+
+header.warning {
+    background-color: #e6872e;
+    color: black;
+}
+
+header.important {
+    background-color: #5499E3;
+    color: black;
+}
+
+.smallText {
+    font-size: 0.75rem;
+}
+
+.profile-container {
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 7dvw;
+    overflow: hidden;
+}
+
+.profile-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    filter: brightness(0.25);
+    z-index: 0;
+}
+
+.profile-container > * {
+    position: relative;
+    z-index: 1;
+}
+
+#pfp {
+    border-radius: 16px;
+}
+
+.plain-profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.name-profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#statusText {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+}
