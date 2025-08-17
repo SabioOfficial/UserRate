@@ -47,15 +47,22 @@ app.get('/:memberId', async (req, res) => {
 
         let statusEmoji = userInfo.user.profile.status_emoji;
         let statusText = userInfo.user.profile.status_text;
+
+        let profileInfo;
+        try {
+            profileInfo = await slack.users.profile.get({ user: memberId });
+        } catch (err) {
+            console.error(`[Profile] Failed to fetch profile for ${memberId}:`, err.message);
+        }
+
+        if (!statusEmoji && !statusText) {
+            statusText = profileInfo?.profile?.title || "";
+        }
+
         const multiChannel = userInfo.user.is_restricted; // multi channel
         const singleChannel = userInfo.user.is_ultra_restricted; // single channel
         const admin = userInfo.user.is_admin;
         const bot = userInfo.user.is_bot;
-
-        if (!statusEmoji && !statusText) {
-            statusEmoji = ":blank:";
-            statusText = "";
-        }
 
         let emojiMap = {};
         if (fs.existsSync(EMOJI_FILE)) {
@@ -76,6 +83,8 @@ app.get('/:memberId', async (req, res) => {
                     statusEmojiHtml = statusEmoji;
                 }
             }
+        } else {
+            statusEmojiHtml = `<span id="statusEmoji" style="display: none;"></span>`;
         }
 
         console.log(`Visited profile of ${username}`);
@@ -104,7 +113,7 @@ app.get('/:memberId', async (req, res) => {
                 html = html.replace("</body>", "<script>addHeader('This is a bot. Please do not send them your freaky messages.', 'neutral')</script></body>");
             }
 
-            res.send(html)
+            res.send(html);
         });
     } catch (error) {
         console.log(`Member with UID ${memberId} not found`);

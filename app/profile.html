@@ -8,17 +8,19 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="assets/global/lucide-font/lucide.css">
     </head>
     <body>
         <script>
             function addHeader(text, type="neutral") {
                 document.querySelector('header').style.display = 'flex';
-                document.querySelector('header').innerText = String(text);
+                document.querySelector('header p').innerText = String(text);
                 document.querySelector('header').classList.add(type);
             }
         </script>
         <header>
-            <p>This user is a workspace admin. Beware!</p>
+            <p>[DEFAULT] Please file a bug report to #userrate-project on Slack if you see this!</p>
+            <button class="icon-x" id="close-header"></button>
         </header>
         <div class="profile-container" style="background: url({{pfp}}) no-repeat center center; background-size: cover;">
             <img id="pfp" src="{{pfp}}" width="112" height="112">
@@ -30,5 +32,10 @@
                 <p id="statusText">{{statusEmoji}} {{statusText}}</p>
             </div>
         </div>
+        <script>
+            document.getElementById('close-header').addEventListener('click', () => {
+                document.querySelector('header').style.display = 'none';
+            });
+        </script>
     </body>
 </html>

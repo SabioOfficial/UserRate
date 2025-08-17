@@ -25,13 +25,22 @@ header.neutral {
 }
 
 header.warning {
-    background-color: #e6872e;
+    background-color: #e4da59;
     color: black;
 }
 
 header.important {
     background-color: #5499E3;
     color: black;
+}
+
+header button {
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 16px;
 }
 
 .smallText {
@@ -71,12 +80,21 @@ header.important {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .name-profile-container {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.name-profile-container h1 {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #statusText {
