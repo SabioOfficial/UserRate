@@ -120,9 +120,6 @@ header button {
 
 .hackatime-container {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
     background: url(assets/images/hackatime-logo.png) no-repeat center center;
     background-size: cover;
     overflow: hidden;
@@ -142,6 +139,12 @@ header button {
 .hackatime-container > * {
     position: relative;
     z-index: 1;
+}
+
+.hackatime-information-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .part-truncate {
@@ -168,10 +171,34 @@ header button {
     min-width: fit-content;
 }
 
-.hackatime-flex-container > div {
+.hackatime-flex-container > div:not(.hackatime-languages-list) {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.hackatime-languages-list {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.lang-badge:first-of-type > img {
+    width: 32px;
+    height: auto;
+}
+
+.lang-badge:nth-of-type(2) > img {
+    width: 24px;
+    height: auto;
+}
+
+.lang-badge:nth-of-type(3) > img {
+    width: 16px;
+    height: auto;
 }
 
 @media (max-width: 768px) {

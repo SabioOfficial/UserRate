@@ -33,22 +33,27 @@
             </div>
         </div>
         <div class="hackatime-container">
-            <h2 class="part-truncate">
-                <span class="part-truncate-primary">{{username}}</span>
-                <span class="part-truncate-secondary">'s Hackatime</span>
-            </h2>
-            <div class="hackatime-flex-container">
-                <div>
-                    <p>Coded With Hackatime For</p>
-                    <h3>{{lifetimeCodingTime}}</p>
-                </div>
-                <div>
-                    <p>Daily Average</p>
-                    <h3>{{dailyAverage}}</p>
-                </div>
-                <div>
-                    <p>Trust Level</p>
-                    <h3>{{hackatimeTrustFactor}}</p>
+            <div class="hackatime-information-container">
+                <h2 class="part-truncate">
+                    <span class="part-truncate-primary">{{username}}</span>
+                    <span class="part-truncate-secondary">'s Hackatime</span>
+                </h2>
+                <div class="hackatime-flex-container">
+                    <div>
+                        <p>All-time</p>
+                        <h3>{{lifetimeCodingTime}}</p>
+                    </div>
+                    <div>
+                        <p>Daily Avg.</p>
+                        <h3>{{dailyAverage}}</p>
+                    </div>
+                    <div>
+                        <p>Trust Level</p>
+                        <h3>{{hackatimeTrustFactor}}</p>
+                    </div>
+                    <div class="hackatime-languages-list">
+                        {{topLanguages}}
+                    </div>
                 </div>
             </div>
         </div>

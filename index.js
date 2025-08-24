@@ -22,7 +22,6 @@ async function refreshEmojis() {
         const result = await slack.emoji.list();
         if (result.ok) {
             fs.writeFileSync(EMOJI_FILE, JSON.stringify(result.emoji, null, 2));
-            console.log(`[Emoji] Refreshed emoji.json (${Object.keys(result.emoji).length} emojis)`);
         } else {
             console.error('[Emoji] Failed to fetch emoji list :c bc', result.error);
         }
@@ -43,17 +42,84 @@ async function fetchHackatimeData(slackUid) {
             { headers }
         );
 
+        function normalizeName(name) {
+            return name.toLowerCase().replace(/\s+/g, "");
+        }
+
+        function getIconUrl(name) {
+            const normalized = normalizeName(name);
+
+            const deviconMap = {
+                html: "html5",
+                css: "css3",
+                js: "javascript",
+                javascript: "javascript",
+                ts: "typescript",
+                typescript: "typescript",
+                py: "python",
+                python: "python",
+                java: "java",
+                c: "c",
+                cpp: "cplusplus",
+                "c++": "cplusplus",
+                cs: "csharp",
+                "c#": "csharp",
+                ruby: "ruby",
+                go: "go",
+                php: "php",
+                rust: "rust",
+                sql: "mysql",
+                bash: "bash",
+                sh: "bash",
+                shell: "bash",
+                json: "json",
+                html5: "html5",
+                css3: "css3",
+                node: "nodejs",
+                nodejs: "nodejs"
+            };
+
+            const slug = deviconMap[normalized];
+
+            if (slug) {
+                return `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${slug}/${slug}-original.svg`;
+            }
+
+            return `https://cdn.jsdelivr.net/gh/lucide-icons/lucide/icons/plus.svg`;
+        }
+
+        const languages = (statsRes.data?.data?.languages || [])
+            .map(lang => ({
+                name: normalizeName(lang.name),
+                time: lang.text,
+                seconds: lang.total_seconds || 0,
+                imageUrl: getIconUrl(lang.name)
+            }))
+            .sort((a, b) => b.seconds - a.seconds);
+
+        const topLanguages = languages.slice(0, 3);
+
         return {
-            lifetimeCodingTime: statsRes.data?.data?.human_readable_total || "0h",
+            lifetimeCodingTime: `${Math.floor((statsRes.data?.data?.total_seconds || 0) / 3600)}h`,
             dailyAverage: statsRes.data?.data?.human_readable_daily_average || "0m",
-            hackatimeTrustFactor: statsRes.data?.trust_factor?.trust_level || "unknown"
+            hackatimeTrustFactor: statsRes.data?.trust_factor?.trust_level === "blue" 
+            ? "Unanalyzed"
+            : statsRes.data?.trust_factor?.trust_level === "red" 
+            ? "Banned"
+            : statsRes.data?.trust_factor?.trust_level === "yellow"
+            ? "Suspected"
+            : statsRes.data?.trust_factor?.trust_level === "green"
+            ? "Trusted"
+            : statsRes.data?.trust_factor?.trust_level || "unknown",
+            topLanguages
         };
     } catch (err) {
         console.error("[Hackatime] API fetch error:", err.message);
         return {
             lifetimeCodingTime: "N/A",
             dailyAverage: "N/A",
-            hackatimeTrustFactor: "N/A"
+            hackatimeTrustFactor: "N/A",
+            topLanguages: []
         };
     }
 }
@@ -116,8 +182,6 @@ app.get('/:memberId', async (req, res) => {
 
         const hackatimeData = await fetchHackatimeData(memberId);
 
-        console.log(`Visited profile of ${username}`);
-
         const templatePath = path.join(__dirname, 'app', 'profile.html');
         fs.readFile(templatePath, 'utf8', (err, data) => {
             if (err) {
@@ -133,7 +197,15 @@ app.get('/:memberId', async (req, res) => {
                 .replace(/{{memberId}}/g, memberId)
                 .replace(/{{lifetimeCodingTime}}/g, hackatimeData.lifetimeCodingTime)
                 .replace(/{{dailyAverage}}/g, hackatimeData.dailyAverage)
-                .replace(/{{hackatimeTrustFactor}}/g, hackatimeData.hackatimeTrustFactor);
+                .replace(/{{hackatimeTrustFactor}}/g, hackatimeData.hackatimeTrustFactor)
+                .replace(
+                    /{{topLanguages}}/g,
+                    hackatimeData.topLanguages
+                        .map(lang => `<div class="lang-badge">
+                                        <img src="${lang.imageUrl}" alt="${lang.name} Icon" title="${lang.name}"/>
+                                      </div>`)
+                        .join("")
+                );
 
             if (multiChannel) {
                 html = html.replace("</body>", "<script>addHeader('This user is a multi-channel guest and can only access a few channels!', 'neutral')</script></body>");
@@ -148,7 +220,6 @@ app.get('/:memberId', async (req, res) => {
             res.send(html);
         });
     } catch (error) {
-        console.log(`Member with UID ${memberId} not found`);
         res.status(404).send(`<h1>No user found with ID: ${memberId}</h1>`)
     }
 });
