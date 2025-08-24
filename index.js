@@ -5,6 +5,8 @@ const fs = require('fs');
 const { WebClient } = require('@slack/web-api');
 const crypto = require('crypto');
 const emoji = require('emoji-dictionary');
+const axios = require('axios')
+const fetch = require('node-fetch');
 
 const app = express();
 const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
@@ -12,7 +14,8 @@ const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'app')));
 
-const EMOJI_FILE = path.join(__dirname, 'emoji.json');
+const EMOJI_FILE = path.join(__dirname, 'emoji.json'); // storing em emojis in a MASSIVE json file. do you know what else is MASSIVE?
+const HACKATIME_BASE = "https://hackatime.hackclub.com"; // base hackatime url?!!??!?! :shocked:
 
 async function refreshEmojis() {
     try {
@@ -30,6 +33,30 @@ async function refreshEmojis() {
 
 refreshEmojis();
 setInterval(refreshEmojis, 60 * 1000);
+
+async function fetchHackatimeData(slackUid) {
+    const headers = { Authorization: `Bearer ${process.env.HACKATIME_API_KEY}` };
+
+    try {
+        const statsRes = await axios.get(
+            `${HACKATIME_BASE}/api/v1/users/${slackUid}/stats`,
+            { headers }
+        );
+
+        return {
+            lifetimeCodingTime: statsRes.data?.data?.human_readable_total || "0h",
+            dailyAverage: statsRes.data?.data?.human_readable_daily_average || "0m",
+            hackatimeTrustFactor: statsRes.data?.trust_factor?.trust_level || "unknown"
+        };
+    } catch (err) {
+        console.error("[Hackatime] API fetch error:", err.message);
+        return {
+            lifetimeCodingTime: "N/A",
+            dailyAverage: "N/A",
+            hackatimeTrustFactor: "N/A"
+        };
+    }
+}
 
 app.get('/:memberId', async (req, res) => {
     const memberId = req.params.memberId;
@@ -56,7 +83,7 @@ app.get('/:memberId', async (req, res) => {
         }
 
         if (!statusEmoji && !statusText) {
-            statusText = profileInfo?.profile?.title || "";
+            statusText = profileInfo?.profile?.title || profileInfo?.profile?.real_name || "";
         }
 
         const multiChannel = userInfo.user.is_restricted; // multi channel
@@ -87,6 +114,8 @@ app.get('/:memberId', async (req, res) => {
             statusEmojiHtml = `<span id="statusEmoji" style="display: none;"></span>`;
         }
 
+        const hackatimeData = await fetchHackatimeData(memberId);
+
         console.log(`Visited profile of ${username}`);
 
         const templatePath = path.join(__dirname, 'app', 'profile.html');
@@ -101,7 +130,10 @@ app.get('/:memberId', async (req, res) => {
                 .replace(/{{pfp}}/g, pfp)
                 .replace(/{{statusEmoji}}/g, statusEmojiHtml)
                 .replace(/{{statusText}}/g, statusText)
-                .replace(/{{memberId}}/g, memberId);
+                .replace(/{{memberId}}/g, memberId)
+                .replace(/{{lifetimeCodingTime}}/g, hackatimeData.lifetimeCodingTime)
+                .replace(/{{dailyAverage}}/g, hackatimeData.dailyAverage)
+                .replace(/{{hackatimeTrustFactor}}/g, hackatimeData.hackatimeTrustFactor);
 
             if (multiChannel) {
                 html = html.replace("</body>", "<script>addHeader('This user is a multi-channel guest and can only access a few channels!', 'neutral')</script></body>");

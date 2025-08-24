@@ -29,7 +29,27 @@
                     <p class="smallText">{{memberId}}</p>
                     <h1>{{username}}</h1>
                 </div>
-                <p id="statusText">{{statusEmoji}} {{statusText}}</p>
+                <p id="statusText">{{statusEmoji}} <span>{{statusText}}</span></p>
+            </div>
+        </div>
+        <div class="hackatime-container">
+            <h2 class="part-truncate">
+                <span class="part-truncate-primary">{{username}}</span>
+                <span class="part-truncate-secondary">'s Hackatime</span>
+            </h2>
+            <div class="hackatime-flex-container">
+                <div>
+                    <p>Coded With Hackatime For</p>
+                    <h3>{{lifetimeCodingTime}}</p>
+                </div>
+                <div>
+                    <p>Daily Average</p>
+                    <h3>{{dailyAverage}}</p>
+                </div>
+                <div>
+                    <p>Trust Level</p>
+                    <h3>{{hackatimeTrustFactor}}</p>
+                </div>
             </div>
         </div>
         <script>
